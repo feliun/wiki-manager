@@ -4,8 +4,7 @@ description: "Standalone ingest processing — expands all raw captures into str
 
 # Ingest
 
-Expand every raw capture in the configured `raw_folder` into a structured wiki
-note that complies with the active wiki-manager policies.
+Expand every raw capture in the configured `raw_folder` into a structured wiki note that complies with the active wiki-manager policies.
 
 ---
 

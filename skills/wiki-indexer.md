@@ -7,8 +7,7 @@ tags: [skill, wiki-manager, obsidian]
 # Skill: Wiki Indexer
 
 Purpose:
-Maintain the configured `index_file` as a structured catalog of all wiki notes,
-organized by type with one-line summaries.
+Maintain the configured `index_file` as a structured catalog of all wiki notes, organized by type with one-line summaries.
 
 When to use:
 - After creating or expanding a wiki note (called from `expand-raw-ideas`).

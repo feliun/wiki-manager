@@ -4,8 +4,7 @@ description: "Vault health audit — orphans, stale content, contradictions, mis
 
 # Lint
 
-Prevent knowledge decay. Find contradictions, stale claims, orphan pages,
-missing concepts, weak cross-references, and content gaps across the vault.
+Prevent knowledge decay. Find contradictions, stale claims, orphan pages, missing concepts, weak cross-references, and content gaps across the vault.
 
 When to use:
 - On a regular cadence (e.g. weekly).
@@ -33,10 +32,7 @@ checks below.
 | `vault-paths.index_file` (e.g. `wiki/index.md`) | Wiki catalog with one-line summaries grouped by type | Opening every file. Use for: contradictions (topic clustering), concepts needing pages (recurring terms in summaries), duplicates (all titles in one list), data gaps (summaries reveal stubs) |
 | `vault-paths.log_file` (e.g. `wiki/log.md`) | Timestamped create/update events, append-only | Stat-ing every file for modification dates. Use for: scoping "this week" checks, staleness detection without filesystem calls |
 
-**Limitations:** index summaries are too short for semantic checks — still need
-to read individual files for contradictions and stale claims. The log file only
-covers events since it was created; older notes require Obsidian CLI or
-filesystem queries.
+**Limitations:** index summaries are too short for semantic checks — still need to read individual files for contradictions and stale claims. The log file only covers events since it was created; older notes require Obsidian CLI or filesystem queries.
 
 ---
 
@@ -44,8 +40,7 @@ filesystem queries.
 
 ### 1. Orphan pages
 
-Pages with **zero inbound links** from any other page in the vault. Disconnected
-knowledge is invisible in the graph and unlikely to be rediscovered.
+Pages with **zero inbound links** from any other page in the vault. Disconnected knowledge is invisible in the graph and unlikely to be rediscovered.
 
 **Scope:** all of `{wiki_folder}` (and any other folders the user wants
 audited).
@@ -66,13 +61,9 @@ Surface connections the author missed.
 identify them.
 
 **Process:**
-1. Build a link-target index from the index file. Supplement with filenames
-   listed by Obsidian CLI.
-2. For each in-scope file, scan body text (excluding frontmatter and existing
-   `[[wikilinks]]`) for plain-text mentions of any link target (case-insensitive,
-   whole-word).
-3. Also flag near-matches — e.g. file `Remote Work Culture` exists, text says
-   "working remotely".
+1. Build a link-target index from the index file. Supplement with filenames listed by Obsidian CLI.
+2. For each in-scope file, scan body text (excluding frontmatter and existing `[[wikilinks]]`) for plain-text mentions of any link target (case-insensitive, whole-word).
+3. Also flag near-matches — e.g. file `Remote Work Culture` exists, text says "working remotely".
 4. Ignore self-references.
 
 **Output:**
@@ -90,12 +81,9 @@ Sort by number of suggestions per file.
 Important ideas that are referenced but have no dedicated page.
 
 **Process:**
-1. Collect all broken `[[wikilinks]]` via Obsidian CLI — pages someone intended
-   to create but didn't.
-2. Scan index summaries for **recurring proper nouns, technical terms, and
-   phrases** that appear across 3+ entries but have no corresponding wiki page.
-3. For deeper detection, read high-link-count files and look for terms repeated
-   across them.
+1. Collect all broken `[[wikilinks]]` via Obsidian CLI — pages someone intended to create but didn't.
+2. Scan index summaries for **recurring proper nouns, technical terms, and phrases** that appear across 3+ entries but have no corresponding wiki page.
+3. For deeper detection, read high-link-count files and look for terms repeated across them.
 4. Merge, deduplicate, sort by frequency.
 
 **Output:** concept, how many pages reference it, example source files.
@@ -127,11 +115,9 @@ abandoned action items.
 
 **Process:**
 1. **Stale claims** — Use the log file to find files not updated in >6 months.
-   Read those files and flag content with dates, statistics, version numbers,
-   market figures, or time-sensitive language ("currently", "as of", "recently").
+   Read those files and flag content with dates, statistics, version numbers, market figures, or time-sensitive language ("currently", "as of", "recently").
    For files predating the log, fall back to filesystem mtimes.
-2. **Stale action items** — Scan `{wiki_folder}` for notes with `status: active`
-   or `status: pending` older than 30 days.
+2. **Stale action items** — Scan `{wiki_folder}` for notes with `status: active`or `status: pending` older than 30 days.
 
 **Output:** two groups — stale claims (file, suspect passage, last modified),
 stale actions (grouped by type, with age).
@@ -143,11 +129,8 @@ stale actions (grouped by type, with age).
 Thin or incomplete pages that could be enriched.
 
 **Process:**
-1. Scan index summaries for stubs ("pending", "TBD", "Blocked", very short
-   descriptions). Read those files to confirm.
-2. Scan `{wiki_folder}` for files with fewer than 50 words of body content
-   (excluding frontmatter), and for placeholder patterns: "TODO", "TBD",
-   "fill in", empty sections.
+1. Scan index summaries for stubs ("pending", "TBD", "Blocked", very short descriptions). Read those files to confirm.
+2. Scan `{wiki_folder}` for files with fewer than 50 words of body content (excluding frontmatter), and for placeholder patterns: "TODO", "TBD", "fill in", empty sections.
 3. Assess whether a web search could fill the gap.
 
 **Output:** file, what's missing, whether a web search could help (with
@@ -169,8 +152,7 @@ Scan the index for very similar titles that might be duplicates worth merging.
 
 ### 9. Rule compliance
 
-Validate notes created or modified this week against the active wiki-manager
-configs.
+Validate notes created or modified this week against the active wiki-manager configs.
 
 **Process:**
 1. Use the log file to identify wiki files created or modified in the past
