@@ -1,0 +1,14 @@
+{
+  "name": "wiki-manager",
+  "owner": {
+    "name": "Felipe Polo",
+    "url": "https://github.com/feliun"
+  },
+  "plugins": [
+    {
+      "name": "wiki-manager",
+      "source": "./",
+      "version": "1.0.0"
+    }
+  ]
+}

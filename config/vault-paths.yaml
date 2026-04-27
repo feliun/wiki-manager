@@ -1,0 +1,16 @@
+# Vault Paths — map logical folder names to your actual vault structure.
+# Override this file at one of the locations declared in commands/manifest.yaml.
+
+vault_root: .              # $WORKSPACE by default; or absolute path
+raw_folder: raw/
+wiki_folder: wiki/
+outputs_folder: outputs/
+index_file: wiki/index.md
+log_file: wiki/log.md
+
+# Subfolders under outputs_folder. Drives /feed location suggestions.
+outputs_subfolders:
+  - drafts
+  - research
+  - analysis
+  - reference

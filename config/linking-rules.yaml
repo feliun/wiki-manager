@@ -1,0 +1,13 @@
+# Linking Rules — how notes connect to each other.
+# Override this file at one of the locations declared in commands/manifest.yaml.
+
+# Every expanded note must wikilink to at least one Concept Hub (MOC).
+# Downgraded to a warning when concept-hubs.yaml has an empty hubs list.
+require_moc_link: true
+
+# When a Concept Hub exists for a topic, prefer a wikilink to the MOC over a tag.
+prefer_wikilinks_over_tags: true
+
+# Use a body `## Related` section for cross-references (indexed by graph/backlinks),
+# rather than a `related:` array in frontmatter.
+use_related_section: true

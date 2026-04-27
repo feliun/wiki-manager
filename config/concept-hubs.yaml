@@ -1,0 +1,8 @@
+# Concept Hubs (MOCs) — wikilinks to the Maps of Content used by the vault.
+# Override this file at one of the locations declared in commands/manifest.yaml.
+#
+# When `linking-rules.require_moc_link` is true, every expanded note must
+# wikilink to at least one entry below. If the list is empty, the rule
+# downgrades to a warning.
+
+hubs: []

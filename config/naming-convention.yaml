@@ -1,0 +1,17 @@
+# Naming Convention — filename rules for wiki notes.
+# Override this file at one of the locations declared in commands/manifest.yaml.
+
+# Default filename pattern for dated notes.
+dated_format: "YYYY-MM-DD Title in natural language.md"
+
+# Note types that do NOT receive a date prefix (living/evergreen documents).
+timeless_types: [moc]
+
+# Maximum title length, in characters.
+max_title_length: 60
+
+# Keep accents and special characters intact in titles.
+preserve_accents: true
+
+# Word separator for titles. Use "space" (recommended for Obsidian) or "hyphen".
+word_separator: space

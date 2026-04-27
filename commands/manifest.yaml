@@ -1,0 +1,77 @@
+# =============================================================================
+# Wiki Manager — Config Manifest
+# =============================================================================
+#
+# Config registry for the wiki-manager plugin. The manifest-resolver skill
+# reads this file to locate config files at runtime.
+#
+# Resolution order (first match wins) for every key:
+#   1. $WORKSPACE/.wiki-manager/<file>          (project override)
+#   2. $WORKSPACE/system/memory/config/<file>   (vault-side config convention)
+#   3. config/<file>                            (plugin defaults — shipped)
+#   4. ~/.claude/wiki-manager/<file>            (personal override)
+#
+# `$WORKSPACE` expands to the directory in which the user invoked the command.
+# Relative paths resolve against the plugin root.
+# =============================================================================
+
+wiki-manager:
+  vault-paths:
+    description: "Logical-to-physical path mapping for vault folders"
+    paths:
+      - $WORKSPACE/.wiki-manager/vault-paths.yaml
+      - $WORKSPACE/system/memory/config/vault-paths.yaml
+      - config/vault-paths.yaml
+      - ~/.claude/wiki-manager/vault-paths.yaml
+    required: true
+    format: yaml
+
+  note-types:
+    description: "Valid note types, initial statuses, and lifecycle flows"
+    paths:
+      - $WORKSPACE/.wiki-manager/note-types.yaml
+      - $WORKSPACE/system/memory/config/note-types.yaml
+      - config/note-types.yaml
+      - ~/.claude/wiki-manager/note-types.yaml
+    required: false
+    format: yaml
+
+  tag-policy:
+    description: "Allowed tags, banned tags, and tag-vs-wikilink rules"
+    paths:
+      - $WORKSPACE/.wiki-manager/tag-policy.yaml
+      - $WORKSPACE/system/memory/config/tag-policy.yaml
+      - config/tag-policy.yaml
+      - ~/.claude/wiki-manager/tag-policy.yaml
+    required: false
+    format: yaml
+
+  concept-hubs:
+    description: "Wikilinks to the Maps of Content (MOCs) used by the vault"
+    paths:
+      - $WORKSPACE/.wiki-manager/concept-hubs.yaml
+      - $WORKSPACE/system/memory/config/concept-hubs.yaml
+      - config/concept-hubs.yaml
+      - ~/.claude/wiki-manager/concept-hubs.yaml
+    required: false
+    format: yaml
+
+  linking-rules:
+    description: "How notes connect to each other (MOC link, related section, wikilinks-vs-tags)"
+    paths:
+      - $WORKSPACE/.wiki-manager/linking-rules.yaml
+      - $WORKSPACE/system/memory/config/linking-rules.yaml
+      - config/linking-rules.yaml
+      - ~/.claude/wiki-manager/linking-rules.yaml
+    required: false
+    format: yaml
+
+  naming-convention:
+    description: "Filename rules for wiki notes"
+    paths:
+      - $WORKSPACE/.wiki-manager/naming-convention.yaml
+      - $WORKSPACE/system/memory/config/naming-convention.yaml
+      - config/naming-convention.yaml
+      - ~/.claude/wiki-manager/naming-convention.yaml
+    required: false
+    format: yaml

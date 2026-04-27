@@ -1,0 +1,38 @@
+# Note Types — defines valid wiki note types with their status lifecycles.
+# Override this file at one of the locations declared in commands/manifest.yaml.
+#
+# Order of keys here also defines the canonical section order for wiki/index.md.
+
+types:
+  note:
+    purpose: "Generic note"
+    initial_status: active
+    flow: [inbox, active, done]
+  idea:
+    purpose: "General ideas and explorations"
+    initial_status: active
+    flow: [inbox, active, done, evergreen]
+  reference:
+    purpose: "External references worth keeping"
+    initial_status: active
+    flow: [active]
+  moc:
+    purpose: "Map of Content — curated hub linking related notes"
+    initial_status: active
+    flow: [active]
+  to-do:
+    purpose: "Actionable tasks or projects"
+    initial_status: active
+    flow: [inbox, active, done]
+  to-read:
+    purpose: "Articles, guides, or resources to consume"
+    initial_status: pending
+    flow: [inbox, pending, active, done]
+  book:
+    purpose: "Book summaries and takeaways"
+    initial_status: active
+    flow: [inbox, active, done, evergreen]
+  content:
+    purpose: "Ideas to develop as published content"
+    initial_status: draft
+    flow: [inbox, draft, ready, published]

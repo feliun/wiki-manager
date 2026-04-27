@@ -1,0 +1,23 @@
+# Tag Policy — what tags are allowed and when to use wikilinks instead.
+# Override this file at one of the locations declared in commands/manifest.yaml.
+#
+# Tags answer: "What domain is this about?" and "What format/channel is this for?"
+# Tags do NOT replace types, statuses, or wikilinks to MOCs (concept hubs).
+# When a Concept Hub exists for a topic, prefer a wikilink to the MOC over a tag.
+# Concept hubs are configured in concept-hubs.yaml.
+
+allowed_domain_tags: []      # Add the domain tags you want to allow
+
+allowed_life_tags: []        # Add the life-domain tags you want to allow
+
+allowed_format_tags: []      # Format/channel tags (typically used on content notes)
+
+# Tags that should NEVER be used (with what to use instead).
+# Each entry: { tag: <name>, use_instead: "<replacement guidance>" }
+banned_tags: []
+
+rules:
+  - "Tags go in frontmatter tags: array, always lowercase"
+  - "Maximum 3-4 tags per note"
+  - "Prefer fewer, more precise tags over many vague ones"
+  - "Before creating a new tag, check if a hub wikilink would serve better"
