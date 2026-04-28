@@ -27,7 +27,18 @@ This agent does **not** own any policy. All policy decisions happen inside
    error.
 2. Resolve `raw_folder` and (if set) `vault_root`. Treat `raw_folder` as
    relative to `vault_root` when set, else `$WORKSPACE`.
-3. Pass the remaining configs through to `expand-raw-ideas` unchanged — the skill chain re-resolves what it needs via `manifest-resolver`.
+3. **Probe the `obsidian` CLI once.** Run via `Bash`:
+   ```bash
+   command -v obsidian >/dev/null 2>&1 && obsidian list-vaults >/dev/null 2>&1 && echo OK || echo MISSING
+   ```
+   - `OK` → cache the signal and rely on `obsidian create`/`obsidian search`
+     for all writes and searches downstream in the chain.
+   - `MISSING` → emit a single warning (`"obsidian CLI unreachable; writes
+     will use Write fallback and Obsidian's index won't see new notes until
+     reload"`) and continue. Do **not** abort — the loop still produces valid
+     notes; the user just needs to reload the vault to surface them.
+4. Pass the remaining configs through to `expand-raw-ideas` unchanged — the
+   skill chain re-resolves what it needs via `manifest-resolver`.
 
 ---
 
