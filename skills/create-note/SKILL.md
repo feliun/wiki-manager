@@ -33,9 +33,13 @@ When NOT to use:
   `tag-policy`, `concept-hubs`, `linking-rules`, `naming-convention`. Required.
 - **`obsidian:obsidian-markdown` skill** — frontmatter and wikilink syntax
   reference. Invoke before composing the note.
-- **`obsidian:obsidian-cli` skill** — primary write path; also used for vault
-  searches (existing-file checks, hub matching). Falls back to the `Write` tool
-  if unavailable.
+- **`obsidian` Bash CLI** — primary write path; also used for vault searches
+  (existing-file checks, hub matching). The `obsidian:obsidian-cli` skill
+  documents the command syntax — invoke it once for reference, but the actual
+  invocations are plain `Bash` commands. Fall back to the `Write` tool **only**
+  when the pre-flight probe (`command -v obsidian` and `obsidian list-vaults`)
+  fails. Never bail out merely because the documentation skill isn't loaded in
+  the current subagent context.
 - **`wiki-indexer` skill** — invoked at the end (Mode A) for wiki-rooted notes.
 
 ---
@@ -127,13 +131,30 @@ When the user invokes this skill ad-hoc ("save this as a note about X"), infer t
     (`> [!tip]`, `> [!example]`, `> [!quote]`) where they add clarity, but do
     **not** invent content not present in `body`.
 
-11. **Write the file.** Invoke `obsidian:obsidian-cli`:
+11. **Write the file.** The write goes through the `obsidian` Bash CLI so
+    Obsidian indexes the new note immediately (no manual reload). The
+    `obsidian:obsidian-cli` skill is documentation — do **not** treat it as a
+    runtime dependency that must be loaded into the current context.
+
+    **Pre-flight probe** (run once per session, cache the result):
+    ```bash
+    command -v obsidian >/dev/null 2>&1 && obsidian list-vaults >/dev/null 2>&1
     ```
+    - Exit 0 → CLI is available. Use it for the write.
+    - Non-zero → Obsidian is closed or `obsidian` isn't on `PATH`. Fall back
+      to the `Write` tool and add `"obsidian-cli unavailable: <reason>"` to
+      `warnings`.
+
+    **Primary path** (`Bash`):
+    ```bash
     obsidian create path="{absolute path}" content="{composed note}" silent
     ```
     - `silent` so the file does not open in Obsidian.
-    - Fall back to the `Write` tool if Obsidian CLI is unavailable; flag the
-      degradation in `warnings`.
+    - For multiline content, use `\n` escapes per the obsidian-cli skill.
+
+    **Do not** fall back to `Write` for any other reason (e.g. "skill not
+    loaded in subagent", "couldn't invoke `Skill` tool"). Those are not
+    valid signals of CLI unavailability — only the probe above is.
 
 12. **Backlink the source raw file** (only when `source_raw_file` is set):
     - Append an `## Expanded` section to the raw file with a wikilink to the

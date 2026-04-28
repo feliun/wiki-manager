@@ -23,7 +23,10 @@ When to use:
   raw file location and dedup search). `create-note` will resolve the rest.
 - **`obsidian:defuddle` skill** — when the raw note contains a URL. Use
   `defuddle parse <url> --md` for clean source extraction.
-- **`obsidian:obsidian-cli` skill** — for the dedup search across the vault.
+- **`obsidian` Bash CLI** — for the dedup search across the vault. The
+  `obsidian:obsidian-cli` skill documents the syntax; the actual search is a
+  plain `Bash` invocation. Fall back to `grep`/`Glob` over `{wiki_folder}` only
+  when the probe (`command -v obsidian` + `obsidian list-vaults`) fails.
 - **`create-note` skill** — owns the write pipeline. **Always delegate** —
   never write the wiki note directly from this skill.
 
@@ -47,8 +50,10 @@ When to use:
    book quotes → `book`). If ambiguous, leave the hint unset and let
    `create-note` resolve it.
 
-5. **Dedup check.** Use `obsidian:obsidian-cli` to search `{wiki_folder}` for
-   adjacent titles. If a clear duplicate exists:
+5. **Dedup check.** Run `obsidian search query='path:{wiki_folder} <terms>'`
+   via `Bash` (the `obsidian:obsidian-cli` skill is documentation, not a
+   runtime tool). If the pre-flight probe failed, fall back to
+   `grep -rl '<terms>' {wiki_folder}`. If a clear duplicate exists:
    - Append an `## Expanded` section to the raw file with a wikilink to the
      existing note.
    - Set the raw file's `status` to `done`.
