@@ -1,16 +1,20 @@
 ---
 name: raw-expander
 description: >
-  Expand all raw/ ideas into wiki notes. Thin loop: lists raw files, filters
-  by status, and dispatches each one to the `expand-raw-ideas` skill, which
-  in turn delegates the write to `create-note`.
+  Expand all raw/ ideas into wiki notes. Thin loop: lists raw files
+  recursively (including any source-grouped subfolders such as
+  `telegram/`, `notes/`, `twitter/`), filters by status, and dispatches
+  each one to the `expand-raw-ideas` skill, which in turn delegates the
+  write to `create-note`.
 subagent_type: general-purpose
 ---
 
 # Agent: Raw Expander
 
-**Role:** List all files in `{raw_folder}`, dispatch each `status: inbox`
-file to the `expand-raw-ideas` skill, aggregate results.
+**Role:** List all `.md` files in `{raw_folder}` **recursively** (walk all
+subfolders — captures may be grouped by source under `telegram/`,
+`notes/`, `twitter/`, etc.), dispatch each `status: inbox` file to the
+`expand-raw-ideas` skill, aggregate results.
 
 **Inputs:** the resolved configs from the `manifest-resolver` —
 `vault-paths`, `note-types`, `tag-policy`, `concept-hubs`, `linking-rules`,
@@ -44,8 +48,9 @@ This agent does **not** own any policy. All policy decisions happen inside
 
 ## Loop
 
-For each `.md` file in `{raw_folder}` **sequentially** (never parallel —
-each expansion may affect dedup state for the next):
+For each `.md` file under `{raw_folder}` (recursively across all
+subfolders) **sequentially** (never parallel — each expansion may affect
+dedup state for the next):
 
 1. Read the file's frontmatter. Skip if `status` is not `inbox`.
 

@@ -4,7 +4,10 @@ description: "Standalone ingest processing — expands all raw captures into str
 
 # Ingest
 
-Expand every raw capture in the configured `raw_folder` into a structured wiki note that complies with the active wiki-manager policies.
+Expand every raw capture under the configured `raw_folder` — **including
+any source-grouped subfolders** (e.g. `telegram/`, `notes/`, `twitter/`)
+— into a structured wiki note that complies with the active wiki-manager
+policies.
 
 ---
 
@@ -23,8 +26,12 @@ Expand every raw capture in the configured `raw_folder` into a structured wiki n
    returned, report "no files to process" and stop.
    **Fallback** (when Obsidian isn't running):
    ```bash
-   grep -rL "^status: done" {raw_folder}/*.md 2>/dev/null
+   grep -rL "^status: done" --include='*.md' {raw_folder} 2>/dev/null
    ```
+   The `-r` + `--include='*.md'` form walks `{raw_folder}` recursively
+   (so source-grouped subfolders like `telegram/`, `notes/`, `twitter/`
+   are picked up). The earlier `{raw_folder}/*.md` glob would only match
+   the top level.
 3. **Expand each file.** For each unprocessed file, apply the
    `expand-raw-ideas` skill — follow ALL rules completely.
 

@@ -140,7 +140,9 @@ suggested query).
 
 ### 7. Stale raw items
 
-Files in `{raw_folder}` older than 7 days that haven't been processed.
+Files anywhere under `{raw_folder}` (walk recursively, including any
+source-grouped subfolders such as `telegram/`, `notes/`, `twitter/`)
+older than 7 days that haven't been processed.
 
 ---
 
