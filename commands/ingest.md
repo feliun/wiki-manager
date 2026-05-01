@@ -21,9 +21,16 @@ policies.
    ```bash
    obsidian search query='path:{raw_folder} [type:raw] -[status:done]'
    ```
-   Substituting `{raw_folder}` with the resolved value. This leverages
-   Obsidian's property index — no file reads needed. If no results are
-   returned, report "no files to process" and stop.
+   Substituting `{raw_folder}` with the resolved value **literally,
+   including any trailing slash**. The slash matters: Obsidian's `path:`
+   operator does substring matching, so `path:raw/` is folder-scoped
+   while `path:raw` is a loose substring match that will also pick up
+   files like `system/templates/raw.md` (the raw-capture template,
+   which legitimately has `type: raw` and `status: inbox`). Do not
+   normalize or strip the slash from the config value — preserve it as
+   written in `vault-paths.yaml`. This leverages Obsidian's property
+   index — no file reads needed. If no results are returned, report
+   "no files to process" and stop.
    **Fallback** (when Obsidian isn't running):
    ```bash
    grep -RL "^status: done" --include='*.md' {raw_folder} 2>/dev/null
