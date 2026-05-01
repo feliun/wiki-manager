@@ -26,12 +26,15 @@ policies.
    returned, report "no files to process" and stop.
    **Fallback** (when Obsidian isn't running):
    ```bash
-   grep -rL "^status: done" --include='*.md' {raw_folder} 2>/dev/null
+   grep -RL "^status: done" --include='*.md' {raw_folder} 2>/dev/null
    ```
-   The `-r` + `--include='*.md'` form walks `{raw_folder}` recursively
-   (so source-grouped subfolders like `telegram/`, `notes/`, `twitter/`
-   are picked up). The earlier `{raw_folder}/*.md` glob would only match
-   the top level.
+   Use `-R` (uppercase, follows symlinks) — **not** `-r` — because
+   source-grouped subfolders may themselves be symlinks (e.g. on this
+   vault, `raw/telegram/` is a symlink to a synced cloud folder). BSD
+   `grep -r` on macOS does not descend through symlinks encountered
+   during the walk, so it would silently miss those captures. The
+   equivalent invariant for `find`: use `find -L {raw_folder} -name '*.md'`,
+   not `find {raw_folder} -name '*.md'`.
 3. **Expand each file.** For each unprocessed file, apply the
    `expand-raw-ideas` skill — follow ALL rules completely.
 

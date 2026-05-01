@@ -16,6 +16,14 @@ subfolders — captures may be grouped by source under `telegram/`,
 `notes/`, `twitter/`, etc.), dispatch each `status: inbox` file to the
 `expand-raw-ideas` skill, aggregate results.
 
+**Symlink-aware traversal:** source-grouped subfolders may be symlinks
+(e.g. a `telegram/` subfolder pointing at a cloud-synced GDrive folder
+so a mobile capture bot can write into it). The walk **must follow
+symlinks**. On macOS/BSD this means: prefer `find -L {raw_folder} -name
+'*.md'` over `find {raw_folder} -name '*.md'`, and `grep -R` (uppercase)
+over `grep -r` (lowercase). Default flags will silently skip symlinked
+subfolders and miss real captures.
+
 **Inputs:** the resolved configs from the `manifest-resolver` —
 `vault-paths`, `note-types`, `tag-policy`, `concept-hubs`, `linking-rules`,
 `naming-convention`. The host command (`/ingest`, `/cob`, etc.) resolves them and passes the absolute paths in.
