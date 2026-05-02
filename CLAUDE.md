@@ -18,10 +18,13 @@ Knowledge system curator for the full lifecycle of a markdown-based wiki. Ingest
 | Command | `ingest` | Process all raw captures into structured wiki notes |
 | Command | `feed` | Save conversation output to the vault |
 | Command | `lint` | Vault health audit across 9 checks |
+| Command | `pull-tweets` | Fetch own tweets into `records/tweets/` and bookmarks into `raw/twitter/bookmarks/` (parallel, idempotent) |
 | Skill | `expand-raw-ideas` | Single-note expansion with full policy compliance |
 | Skill | `wiki-indexer` | Maintain wiki index catalog |
 | Skill | `manifest-resolver/` | Config path resolution from manifest.yaml |
 | Agent | `raw-expander` | Batch raw expansion using config-driven policies |
+| Agent | `tweet-fetcher` | Fetch own X posts via `xurl` (used by `/pull-tweets`) |
+| Agent | `bookmark-fetcher` | Fetch X bookmarks via `xurl` (used by `/pull-tweets`) |
 | Hook | `wiki-logger.sh` | Log vault changes and reindex search on every write/edit |
 
 ## Operational Rules

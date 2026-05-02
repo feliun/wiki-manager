@@ -1,0 +1,30 @@
+# Twitter / X capture defaults — used by /pull-tweets.
+# Override at any path in commands/manifest.yaml under the `twitter` key.
+
+# Auth identity — shared across streams (one X account)
+username: felipepoloruiz
+
+# Per-stream config. Tweets (own posts) and bookmarks (saved tweets) are
+# treated as independent capture streams with separate output paths,
+# lifecycles, and lookback windows.
+#
+#   - tweets    → live under records/, outside raw/. Authored archive,
+#                 not part of the raw-expander pipeline. No `status` field.
+#   - bookmarks → live under raw/. Real raw captures, ingestible via
+#                 /ingest. Get `status: inbox` on write.
+#
+# Both `path` values are relative to vault_root (vault-paths.yaml::vault_root)
+# and require a trailing slash (matches the vault-paths.yaml convention).
+tweets:
+  path: records/tweets/
+  window_days: 7              # default --days when not specified on CLI
+
+bookmarks:
+  path: raw/twitter/bookmarks/
+  window_days: 7
+
+# All X/Twitter API operations in this plugin MUST use the `xurl` CLI
+# (OAuth2 user-context auth). Never substitute curl + bearer — bookmark
+# endpoints require user context which xurl is the only configured client for.
+# See ~/.claude/projects/-Users-felipepolo-Documents-Digital-Garden/memory/reference_xurl.md
+# for setup details.

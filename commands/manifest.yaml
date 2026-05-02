@@ -75,3 +75,13 @@ wiki-manager:
       - ~/.claude/wiki-manager/naming-convention.yaml
     required: false
     format: yaml
+
+  twitter:
+    description: "Defaults for /pull-tweets — window, X handle. Output paths derive from vault-paths.yaml::raw_folder."
+    paths:
+      - $WORKSPACE/.wiki-manager/twitter.yaml
+      - $WORKSPACE/system/memory/config/twitter.yaml
+      - config/twitter.yaml
+      - ~/.claude/wiki-manager/twitter.yaml
+    required: false
+    format: yaml
