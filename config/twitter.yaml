@@ -2,7 +2,7 @@
 # Override at any path in commands/manifest.yaml under the `twitter` key.
 
 # Auth identity — shared across streams (one X account)
-username: felipepoloruiz
+username: ""  # Set to your X/Twitter handle (without @). Required for /pull-tweets.
 
 # Per-stream config. Tweets (own posts) and bookmarks (saved tweets) are
 # treated as independent capture streams with separate output paths,
@@ -26,5 +26,5 @@ bookmarks:
 # All X/Twitter API operations in this plugin MUST use the `xurl` CLI
 # (OAuth2 user-context auth). Never substitute curl + bearer — bookmark
 # endpoints require user context which xurl is the only configured client for.
-# See ~/.claude/projects/-Users-felipepolo-Documents-Digital-Garden/memory/reference_xurl.md
-# for setup details.
+# xurl setup: install via `brew install mangopdf/utils/xurl` (or see https://github.com/mangopdf/xurl).
+# Authenticate: `xurl auth login` and create an X dev portal app with callback URL http://127.0.0.1:8080/callback.

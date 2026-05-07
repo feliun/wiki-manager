@@ -26,7 +26,7 @@ subfolders and miss real captures.
 
 **Inputs:** the resolved configs from the `manifest-resolver` —
 `vault-paths`, `note-types`, `tag-policy`, `concept-hubs`, `linking-rules`,
-`naming-convention`. The host command (`/ingest`, `/cob`, etc.) resolves them and passes the absolute paths in.
+`naming-convention`. The host command (`/ingest`; or `/cob` if you have the optional `cob` plugin installed) resolves them and passes the absolute paths in.
 
 This agent does **not** own any policy. All policy decisions happen inside
 `expand-raw-ideas` and `create-note`. Keep this loop thin.

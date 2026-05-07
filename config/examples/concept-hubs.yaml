@@ -1,0 +1,11 @@
+# Concept Hubs (MOCs) — example.
+# Maps of Content (MOCs) are the wikilinks that anchor your vault's topology.
+# Every expanded note should link to at least one of the entries below
+# when `linking-rules.require_moc_link` is true.
+#
+# Use the wikilink form exactly as it appears in your vault (case-sensitive).
+
+hubs:
+  - "[[Software Engineering]]"
+  - "[[Personal Knowledge Management]]"
+  - "[[Productivity]]"

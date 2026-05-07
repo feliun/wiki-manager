@@ -32,7 +32,7 @@ authenticated-user endpoints used here.
    ```bash
    command -v xurl >/dev/null 2>&1 || echo MISSING
    ```
-   If missing: emit `xurl not found — install per memory:reference_xurl.md`, abort.
+   If missing: emit `xurl not found — install via 'brew install mangopdf/utils/xurl' (see https://github.com/mangopdf/xurl), then run 'xurl auth login' with an X dev portal app whose callback URL is http://127.0.0.1:8080/callback`, abort.
 
 2. Create `{output_path}` if absent:
    ```bash

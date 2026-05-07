@@ -1,0 +1,32 @@
+# Tag Policy — example.
+# Tags answer: "What domain is this about?" and "What format/channel is this for?"
+# Tags do NOT replace types, statuses, or wikilinks to MOCs (concept hubs).
+# When a Concept Hub exists for a topic, prefer a wikilink to the MOC over a tag.
+
+allowed_domain_tags:
+  - software
+  - design
+  - research
+
+allowed_life_tags:
+  - health
+  - finance
+  - travel
+
+allowed_format_tags:
+  - article
+  - newsletter
+  - talk
+
+# Tags that should NEVER be used (with what to use instead).
+banned_tags:
+  - tag: misc
+    use_instead: "Pick a precise domain tag, or remove tags entirely."
+  - tag: todo
+    use_instead: "Use a task manager or `- [ ]` checkboxes inside the note body."
+
+rules:
+  - "Tags go in frontmatter tags: array, always lowercase"
+  - "Maximum 3-4 tags per note"
+  - "Prefer fewer, more precise tags over many vague ones"
+  - "Before creating a new tag, check if a hub wikilink would serve better"

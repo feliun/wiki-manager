@@ -13,19 +13,31 @@
 #
 # A `vault_root: .` in any of those files resolves to $CLAUDE_PROJECT_DIR.
 # If no vault root can be resolved, the hook exits silently.
+#
+# Log file path is resolved from `log_file` in the same vault-paths.yaml
+# files (relative to vault root). Falls back to `wiki/log.md` if unset.
 
 set -e
 
 # --- Resolve vault root ----------------------------------------------------
 
-read_vault_root() {
+read_yaml_key() {
+  # crude YAML parse: first `<key>: <value>` line, strip quotes/comments
   local file="$1"
+  local key="$2"
   [ -f "$file" ] || return 1
-  # crude YAML parse: first `vault_root: <value>` line, strip quotes/comments
   local val
-  val=$(grep -E '^vault_root:[[:space:]]*' "$file" | head -n1 \
-        | sed -E 's/^vault_root:[[:space:]]*//; s/[[:space:]]*#.*$//; s/^["'"'"']//; s/["'"'"']$//')
+  val=$(grep -E "^${key}:[[:space:]]*" "$file" | head -n1 \
+        | sed -E "s/^${key}:[[:space:]]*//; s/[[:space:]]*#.*$//; s/^[\"']//; s/[\"']$//")
   [ -n "$val" ] && printf '%s' "$val"
+}
+
+read_vault_root() {
+  read_yaml_key "$1" "vault_root"
+}
+
+read_log_file() {
+  read_yaml_key "$1" "log_file"
 }
 
 resolve_vault_root() {
@@ -63,6 +75,29 @@ resolve_vault_root() {
 VAULT=$(resolve_vault_root) || exit 0
 [ -n "$VAULT" ] || exit 0
 
+# --- Resolve log file path -------------------------------------------------
+
+resolve_log_file() {
+  local base="$CLAUDE_PROJECT_DIR"
+  local candidates=()
+  [ -n "$base" ] && candidates+=(
+    "$base/.wiki-manager/vault-paths.yaml"
+    "$base/system/memory/config/vault-paths.yaml"
+  )
+  candidates+=("$HOME/.claude/wiki-manager/vault-paths.yaml")
+
+  local f val
+  for f in "${candidates[@]}"; do
+    val=$(read_log_file "$f") || continue
+    [ -n "$val" ] && printf '%s' "$val" && return 0
+  done
+
+  # Fallback default
+  printf '%s' "wiki/log.md"
+}
+
+LOG_REL=$(resolve_log_file)
+
 # --- Read tool payload -----------------------------------------------------
 
 INPUT=$(cat)
@@ -77,7 +112,7 @@ esac
 
 # --- Log entry -------------------------------------------------------------
 
-LOG="$VAULT/wiki/log.md"
+LOG="$VAULT/$LOG_REL"
 NOTE_NAME=$(basename "$FILE_PATH" .md)
 REL_PATH=${FILE_PATH#"$VAULT"/}
 

@@ -7,6 +7,7 @@
 - **[Obsidian CLI](https://github.com/Yakitrak/obsidian-cli)** — required. Used by every command for vault queries.
 - **[qmd](https://github.com/Yakitrak/qmd)** — required. Used for full-text and semantic search.
 - **jq** — required (used by the `wiki-logger` hook). Install via `brew install jq` or your package manager.
+- **[xurl](https://github.com/mangopdf/xurl)** — required only for `/pull-tweets`. Install via `brew install mangopdf/utils/xurl`, then `xurl auth login`.
 - The **Obsidian desktop app must be running** for the CLI to work.
 
 ## Installation
@@ -20,8 +21,8 @@
 ### Via clone
 
 ```
-git clone https://github.com/feliun/wiki-manager.git ~/Documents/development/ai/wiki-manager
-ln -s ~/Documents/development/ai/wiki-manager ~/.claude/plugins/wiki-manager
+git clone https://github.com/feliun/wiki-manager.git ~/path/to/wiki-manager
+ln -s ~/path/to/wiki-manager ~/.claude/plugins/wiki-manager
 ```
 
 ## Configuration
