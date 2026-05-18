@@ -8,6 +8,7 @@
 - **[qmd](https://github.com/Yakitrak/qmd)** — required. Used for full-text and semantic search.
 - **jq** — required (used by the `wiki-logger` hook). Install via `brew install jq` or your package manager.
 - **[xurl](https://github.com/mangopdf/xurl)** — required only for `/pull-tweets`. Install via `brew install mangopdf/utils/xurl`, then `xurl auth login`.
+- **Granola MCP server** — required only for `/pull-meetings`. Granola must be installed locally and the `granola` MCP server must be reachable from this Claude session.
 - The **Obsidian desktop app must be running** for the CLI to work.
 
 ## Installation
@@ -46,6 +47,8 @@ file from `config/` to one of the above locations and customize.
 | `concept-hubs.yaml` | Wikilinks to the Maps of Content (MOCs) used by the vault |
 | `linking-rules.yaml` | MOC link requirement, related-section policy, wikilinks-vs-tags |
 | `naming-convention.yaml` | Filename rules for wiki notes |
+| `twitter.yaml` | Defaults for `/pull-tweets` — window, X handle, output paths |
+| `granola.yaml` | Defaults for `/pull-meetings` — destination, window, content fields, naming |
 
 The plugin ships generic defaults. Most users only need to fill `concept-hubs.yaml`
 and (optionally) tighten `tag-policy.yaml` to their vocabulary.
@@ -57,6 +60,8 @@ and (optionally) tighten `tag-policy.yaml` to their vocabulary.
 | `/ingest` | Process every raw capture in `raw_folder` into a structured wiki note. |
 | `/feed` | Save substantive conversation output to `outputs_folder/<subfolder>/`. |
 | `/lint` | Vault health audit: orphans, stale content, contradictions, missing links, rule compliance. |
+| `/pull-tweets` | Fetch own X posts and bookmarks into `raw/twitter/` (idempotent, skip-if-exists). |
+| `/pull-meetings` | Fetch Granola meetings into `records/meetings/` (idempotent on `granola_id`). Args: `--days N`, `--since YYYY-MM-DD`, `--folder <id>`, `--folders <id1,id2,...>`. Coexists with legacy meeting files. Spec: [`commands/pull-meetings.md`](commands/pull-meetings.md). |
 
 ## Skills
 
@@ -71,6 +76,9 @@ and (optionally) tighten `tag-policy.yaml` to their vocabulary.
 | Agent | Description |
 |-------|-------------|
 | `raw-expander` | Batch-processes every raw capture using the active configs. Self-contained. |
+| `tweet-fetcher` | Pulls the user's own X posts via `xurl` and writes flat `{tweet_id}.md` files. Dispatched by `/pull-tweets`. |
+| `bookmark-fetcher` | Pulls the user's X bookmarks via `xurl` and writes flat `{tweet_id}.md` files; supports folder scoping. Dispatched by `/pull-tweets`. |
+| `meeting-fetcher` | Pulls Granola meetings via the `granola` MCP server and writes `{YYYY-MM-DD} {slug-title}.md` files keyed on `granola_id` frontmatter. Dispatched by `/pull-meetings`. |
 
 ## Hooks
 

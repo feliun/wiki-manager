@@ -1,0 +1,28 @@
+# Granola capture defaults — used by /pull-meetings.
+# Plugin default config. Resolved at priority 3, below project + vault overrides
+# (see agents/wiki-manager/commands/manifest.yaml::granola).
+
+# Destination directory, relative to vault_root (from vault-paths.yaml).
+# Granola-sourced files coexist with legacy meeting files in the same folder;
+# idempotency is keyed on `granola_id` frontmatter, not filename.
+path: records/meetings/
+
+# Lookback window in days when no CLI flag is passed. Default: last 24h.
+window_days: 1
+
+# Which Granola fields land in the note body.
+#   summary       — Granola's AI-generated meeting summary
+#   private_notes — the user's own notes captured during the meeting
+content:
+  - summary
+  - private_notes
+
+# Filename shape. `{date}` resolves via `date_format`; `{slug-title}` is the
+# meeting title slugified (lowercased, hyphens, emoji/punct stripped, ~60 chars).
+# Final filename is `{pattern}.md`.
+naming:
+  pattern: "{date} {slug-title}"
+  date_format: YYYY-MM-DD
+
+# All Granola operations use the `granola` MCP server. If auth fails, the
+# fetcher aborts with a re-auth instruction.

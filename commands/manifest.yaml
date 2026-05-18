@@ -85,3 +85,13 @@ wiki-manager:
       - ~/.claude/wiki-manager/twitter.yaml
     required: false
     format: yaml
+
+  granola:
+    description: "Defaults for /pull-meetings — destination, window, content fields, naming."
+    paths:
+      - $WORKSPACE/.wiki-manager/granola.yaml
+      - $WORKSPACE/system/memory/config/granola.yaml
+      - config/granola.yaml
+      - ~/.claude/wiki-manager/granola.yaml
+    required: false
+    format: yaml
