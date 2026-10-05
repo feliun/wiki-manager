@@ -19,10 +19,23 @@ subfolders — captures may be grouped by source under `telegram/`,
 **Symlink-aware traversal:** source-grouped subfolders may be symlinks
 (e.g. a `telegram/` subfolder pointing at a cloud-synced GDrive folder
 so a mobile capture bot can write into it). The walk **must follow
-symlinks**. On macOS/BSD this means: prefer `find -L {raw_folder} -name
-'*.md'` over `find {raw_folder} -name '*.md'`, and `grep -R` (uppercase)
-over `grep -r` (lowercase). Default flags will silently skip symlinked
-subfolders and miss real captures.
+symlinks**, which on macOS/BSD means exactly one tool:
+
+```bash
+find -L {raw_folder} -name '*.md' -print0
+```
+
+`find` without `-L` skips symlinked subfolders. **`grep -R` does not
+substitute for it** — despite the flag's name, BSD grep follows only the
+symlinks passed as explicit command-line arguments, never one it meets
+while descending, so `grep -R` has the same blind spot as plain `find`.
+Measured on macOS (BSD grep 2.6.0-FreeBSD) over a `raw/` of 234 captures
+with 118 behind a `raw/telegram` symlink: `grep -Rl` saw 116, `find`
+saw 116, `find -L` saw all 234. The miss is silent and exits 0, so it
+reads as an empty queue rather than a failure.
+
+Use `-print0` with `while IFS= read -r -d ''` — capture filenames
+contain spaces.
 
 **Inputs:** the resolved configs from the `manifest-resolver` —
 `vault-paths`, `note-types`, `tag-policy`, `concept-hubs`, `linking-rules`,
