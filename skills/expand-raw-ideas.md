@@ -46,7 +46,7 @@ When to use:
    - If both fail, use the raw text only.
 
 4. **Determine the type hint.** Match capture cues against the keys of
-   `note-types.types` (e.g. "To buy:" → `to-buy`, "To read:" → `to-read`,
+   `note-types.types` (e.g. "To buy:" → `to-buy`,
    book quotes → `book`). If ambiguous, leave the hint unset and let
    `create-note` resolve it.
 

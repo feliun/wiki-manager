@@ -93,15 +93,25 @@ When the user invokes this skill ad-hoc ("save this as a note about X"), infer t
      `naming-convention.dated_format` (default `YYYY-MM-DD`).
    - Append `.md`.
 
-6. **Resolve target path.**
+6. **Resolve target path.** Compute **two** path strings — both are needed in step 11:
+
+   **(a) Vault-relative path** (used by `obsidian create path=`):
    - `target_root=outputs`:
      `{vault-paths.outputs_folder}/{target_subfolder_override}/{filename}`.
      `target_subfolder_override` MUST be set; abort otherwise. If
      `vault-paths.outputs_subfolders` is non-empty, warn when the override is not in the list (continue anyway).
-   - `target_root=wiki` (default):`{vault-paths.wiki_folder}/{type}/{filename}`.
+   - `target_root=wiki` (default): `{vault-paths.wiki_folder}/{type}/{filename}`.
+   - These config values (`wiki_folder`, `outputs_folder`) are vault-relative by convention (e.g. `wiki`, `outputs`). The result is `wiki/to-buy/2026-05-16 Foo.md` — never starts with `/`.
+
+   **(b) Absolute path** (used by the `Write` fallback, existence checks, and the return value):
+   - Join `{vault_root}` (the absolute path to the vault) with the vault-relative path from (a).
+   - This is the path that goes back to the caller in the `created:` field.
+
    - Create the subfolder if it doesn't exist.
-   - If a file already exists at the target path, **stop and ask the user
+   - If a file already exists at the absolute target path, **stop and ask the user
      before overwriting**. Never silently clobber.
+
+   **CRITICAL — path semantics:** `obsidian create path=` interprets its value as **vault-relative**. Passing an absolute path silently produces a nested duplicate of the vault tree (e.g. `/vault/Users/.../vault/wiki/to-buy/foo.md`). Always pass the vault-relative form (a) to the CLI; use the absolute form (b) only for the `Write` fallback and for the result payload.
 
 7. **Resolve tags.**
    - Start from `extra_tags`, then add 2–3 tags inferred from `body`.
@@ -147,10 +157,17 @@ When the user invokes this skill ad-hoc ("save this as a note about X"), infer t
 
     **Primary path** (`Bash`):
     ```bash
-    obsidian create path="{absolute path}" content="{composed note}" silent
+    obsidian create path="{vault-relative path}" content="{composed note}" silent
     ```
+    - `path=` is **vault-relative** (e.g. `wiki/to-buy/2026-05-16 Foo.md`), the (a) value from step 6. **Do not** pass an absolute path here — Obsidian will join it onto the vault root and create a nested duplicate tree (this bug bit on 2026-05-04 and 2026-05-18).
     - `silent` so the file does not open in Obsidian.
     - For multiline content, use `\n` escapes per the obsidian-cli skill.
+
+    **Write fallback** (only when the probe failed):
+    ```
+    Write({ file_path: "{absolute path}", content: "{composed note}" })
+    ```
+    - The `Write` tool expects an **absolute path**, the (b) value from step 6.
 
     **Do not** fall back to `Write` for any other reason (e.g. "skill not
     loaded in subagent", "couldn't invoke `Skill` tool"). Those are not
@@ -202,3 +219,4 @@ NOTE CREATED — {absolute path} (type: {type}, indexed: {true|false})
 - Do NOT call this skill in parallel — each write may affect dedup state for the next.
 - Do NOT bypass `wiki-indexer` by editing `index.md` directly.
 - Do NOT delete raw files when backlinking.
+- Do NOT pass an absolute path to `obsidian create path=` — it expects vault-relative. Passing an absolute path produces a nested duplicate vault tree (`{vault_root}/Users/.../{vault_root}/wiki/...`). Use form (a) from step 6.

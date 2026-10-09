@@ -62,8 +62,20 @@ Cost: ~1s for ~150 files. Done once per run, not per meeting.
 
 ### 2. List meetings
 
-Compute `custom_end` = today's date (UTC midnight, RFC 3339, same shape
-as `since`).
+Compute `custom_end` = **tomorrow's** date at UTC midnight, RFC 3339,
+same shape as `since` (e.g. if today is `2026-07-01`, then
+`custom_end = 2026-07-02T00:00:00Z`).
+
+> **Why tomorrow's midnight, never today's:** `custom_end` is an
+> *exclusive* upper bound. Setting it to today's UTC midnight
+> (`2026-07-01T00:00:00Z`) ends the window at the *start* of today, so
+> every meeting that actually happened today — e.g. an afternoon call at
+> 13:35 local — falls *after* the bound and is silently dropped. This is
+> the recurring "today's meetings never get pulled" bug. Using tomorrow's
+> midnight makes the window `[since, end-of-today]` and captures the full
+> current day across the local timezone. Over-inclusion is harmless: the
+> existing-ID index (step 1) dedupes, so anything pulled today is skipped
+> on the next run.
 
 **If `folder_ids` is empty/null:**
 
@@ -126,8 +138,23 @@ Granola's `known_participants` only carries attendees Granola has
 Granola show up as the literal string `Unknown`, even when the calendar
 invite has the full attendee list.
 
-For each meeting where `known_participants` is `Unknown` or empty,
-attempt one fallback against the user's primary Google Calendar:
+Fire the fallback for each meeting where `known_participants` is any of:
+
+- the literal string `Unknown`
+- empty
+- **self-only** — the note creator is the *only* resolved participant
+
+> The self-only case is the non-obvious one, and it silently bypassed this
+> step for months. A 1:1 where Granola resolved only the note creator is
+> functionally identical to no attendee data — you cannot have a meeting
+> with yourself — but the list is technically *populated*, so an
+> `Unknown`-or-empty trigger skips the fallback and writes a one-name
+> attendee list as if it were complete. Observed 2026-08-10 on
+> `Rafa Afianza <> Felipe`: `attendees: [felipe.polo@orbitant.com]`,
+> counterpart lost, and the file looked well-formed. Do not narrow this
+> trigger back to `Unknown`-or-empty.
+
+Then attempt one fallback against the user's primary Google Calendar:
 
 1. Call `list_events` with a ±5-minute window around the meeting's
    start time (`startTime = meeting_start - 5min`, `endTime = meeting_start + 5min`)
@@ -147,24 +174,55 @@ per attendee — no names. Render per attendee:
 - `- {email} (organizer)` — when `organizer: true`
 - `- {email} (you)` — when `self: true`
 
-Granola known_participants always wins when populated — this fallback
-is strictly additive for the `Unknown` case. Do not merge or overwrite
-when Granola already has data.
+Granola known_participants wins when it carries **someone other than the
+note creator** — the fallback is additive for the `Unknown` / empty /
+self-only cases only. In the self-only case, *merge*: keep the creator and
+add the Calendar attendees, deduplicated by email.
 
 If the Google Calendar MCP is unavailable (no auth, no tool), skip this
-step silently and keep `Unknown`. The fallback is best-effort; the
-fetcher must not fail if Calendar is offline.
+step silently and keep whatever Granola returned. The fallback is
+best-effort; the fetcher must not fail if Calendar is offline.
+
+**When the fallback cannot resolve a self-only 1:1** (no calendar event at
+that slot — common for ad-hoc calls that never got an invite), say so in
+the run report rather than reporting the file as clean. Name the meeting
+and state that the counterpart is unresolved, so the orchestrator can put
+the identity question to the user. A self-only attendee list that reaches
+the vault unremarked becomes a permanently orphaned meeting note: nothing
+links it to a contact, so it never surfaces in that relationship's history.
 
 ### 5. Slugify title
 
 Per meeting:
 
 1. Lowercase the title.
-2. Replace whitespace runs with single hyphens.
-3. Strip emoji and any character outside `[a-z0-9-]`.
-4. Collapse repeated hyphens, trim leading/trailing hyphens.
-5. Cap at ~60 characters (cut on a word boundary if possible).
-6. If empty after stripping (rare — title was all emoji/punct), fall
+2. **Transliterate accented Latin characters to their ASCII base**, before
+   any stripping: `á à â ä ã å → a`, `é è ê ë → e`, `í ì î ï → i`,
+   `ó ò ô ö õ → o`, `ú ù û ü → u`, `ñ → n`, `ç → c`, `ß → ss`,
+   `æ → ae`, `ø → o`, `œ → oe`. (`iconv -f UTF-8 -t ASCII//TRANSLIT`
+   or Unicode NFD-then-drop-combining-marks both do this.)
+
+   > **This step is load-bearing — do not fold it into step 4.** Step 4
+   > strips anything outside `[a-z0-9-]`, and a literal reading of that
+   > rule *deletes* accented characters rather than folding them: it
+   > turns "Víctor / Felipe" into `vctor-felipe` and "Reunión con Eric"
+   > into `reunin-con-eric`. That is how
+   > `2026-07-20 reunin-con-eric-y-felipe-de-orbitant.md` got its name.
+   > Deleting the character silently mangles the word; transliterating
+   > preserves it. This also keeps the folder internally consistent —
+   > the existing corpus is transliterated (`jose-`, `ana-garcia`,
+   > `victor-felipe`) — and satisfies the "keep the filename
+   > human-scannable" requirement below. Spanish, French and Portuguese
+   > titles are the norm in this vault, not the exception, so this path
+   > is hit constantly. Flagged 2026-08-11 after being re-decided
+   > ad hoc on each run.
+
+3. Replace whitespace runs with single hyphens.
+4. Strip emoji and any character outside `[a-z0-9-]` (accents are already
+   folded by step 2, so nothing lexical should be lost here).
+5. Collapse repeated hyphens, trim leading/trailing hyphens.
+6. Cap at ~60 characters (cut on a word boundary if possible).
+7. If empty after stripping (rare — title was all emoji/punct), fall
    back to the meeting UUID's first 8 chars.
 
 Filename: `{YYYY-MM-DD} {slug-title}.md` where `YYYY-MM-DD` is derived
