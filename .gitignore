@@ -1,2 +1,5 @@
 .DS_Store
 .claude/settings.local.json
+
+# Local agent lessons — contains private vault/account details; keep off the public repo
+lessons.md
