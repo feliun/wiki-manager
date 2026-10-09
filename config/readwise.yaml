@@ -1,0 +1,24 @@
+# Readwise capture defaults — used by /pull-highlights.
+# Plugin default config. Resolved at priority 3, below project + vault overrides
+# (see commands/manifest.yaml::readwise).
+
+# Destination directory, relative to vault_root (from vault-paths.yaml).
+# Lives under raw/ so /ingest expands each source into a wiki note.
+# One file per source document per pull; idempotency is keyed on the
+# `highlight_ids` frontmatter list, not the filename.
+path: raw/highlights/
+
+# Lookback window in days when no CLI flag is passed. Filters on the
+# highlight's `updated` timestamp, not `highlighted_at`: Readwise stamps
+# highlights at sync time, so a 1-day window can miss a sync that lands
+# around midnight. The overlap is harmless — highlight-ID dedupe skips repeats.
+window_days: 2
+
+# Filename shape. `{date}` is the run date via `date_format`; `{slug-title}` is
+# the source title slugified (lowercased, accents folded, hyphens, ~60 chars).
+naming:
+  pattern: "{date} {slug-title}"
+  date_format: YYYY-MM-DD
+
+# All Readwise operations use the `readwise` MCP server. If it is unreachable,
+# the fetcher aborts with a re-auth instruction.

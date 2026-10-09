@@ -41,6 +41,11 @@ When to use:
    (already processed).
 
 3. **Extract source content.** Identify the core idea.
+   - **`source: readwise` files:** the `## Highlights` blockquotes (and any
+     `**Note:**` lines) ARE the idea — they are what the user chose to keep.
+     Build the note from them. Fetch the `Source:` URL only for context
+     (author's framing, a term you need defined); never let a full-article
+     summary replace the highlights.
    - If the raw file contains a URL, run `defuddle parse <url> --md` for clean content extraction.
    - Fall back to `WebFetch` on failure.
    - If both fail, use the raw text only.

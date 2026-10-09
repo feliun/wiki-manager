@@ -1,6 +1,6 @@
 {
   "name": "wiki-manager",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "Knowledge system curator for markdown-based wikis. Ingests raw captures, expands them into structured notes, maintains the wiki graph, and audits vault health. Optimized for Obsidian, works with any markdown vault.",
   "author": {
     "name": "Felipe Polo"

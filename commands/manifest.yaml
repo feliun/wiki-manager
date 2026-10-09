@@ -95,3 +95,13 @@ wiki-manager:
       - ~/.claude/wiki-manager/granola.yaml
     required: false
     format: yaml
+
+  readwise:
+    description: "Defaults for /pull-highlights — destination, window, naming."
+    paths:
+      - $WORKSPACE/.wiki-manager/readwise.yaml
+      - $WORKSPACE/system/memory/config/readwise.yaml
+      - config/readwise.yaml
+      - ~/.claude/wiki-manager/readwise.yaml
+    required: false
+    format: yaml

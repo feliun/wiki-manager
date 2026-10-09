@@ -19,12 +19,16 @@ Knowledge system curator for the full lifecycle of a markdown-based wiki. Ingest
 | Command | `feed` | Save conversation output to the vault |
 | Command | `lint` | Vault health audit across 9 checks |
 | Command | `pull-tweets` | Fetch own tweets into `records/tweets/` and bookmarks into `raw/twitter/bookmarks/` (parallel, idempotent) |
+| Command | `pull-meetings` | Fetch Granola meetings into `records/meetings/` (idempotent on `granola_id`) |
+| Command | `pull-highlights` | Fetch Readwise highlights into `raw/highlights/`, one file per source (idempotent on `highlight_ids`) |
 | Skill | `expand-raw-ideas` | Single-note expansion with full policy compliance |
 | Skill | `wiki-indexer` | Maintain wiki index catalog |
 | Skill | `manifest-resolver/` | Config path resolution from manifest.yaml |
 | Agent | `raw-expander` | Batch raw expansion using config-driven policies |
 | Agent | `tweet-fetcher` | Fetch own X posts via `xurl` (used by `/pull-tweets`) |
 | Agent | `bookmark-fetcher` | Fetch X bookmarks via `xurl` (used by `/pull-tweets`) |
+| Agent | `meeting-fetcher` | Fetch Granola meetings via the `granola` MCP (used by `/pull-meetings`) |
+| Agent | `highlight-fetcher` | Fetch Readwise highlights via the `readwise` MCP (used by `/pull-highlights`) |
 | Hook | `wiki-logger.sh` | Log vault changes and reindex search on every write/edit |
 
 ## Operational Rules
