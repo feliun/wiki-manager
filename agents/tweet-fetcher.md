@@ -57,10 +57,19 @@ with `re-run \`xurl auth oauth2\``.
 Loop until `meta.next_token` is absent:
 
 ```bash
-xurl "/2/users/{user_id}/tweets?max_results=100&start_time={since}&tweet.fields=created_at,referenced_tweets,attachments,entities&expansions=attachments.media_keys,referenced_tweets.id,referenced_tweets.id.author_id&media.fields=url,preview_image_url,type&user.fields=username"
+xurl "/2/users/{user_id}/tweets?max_results=100&start_time={since}&tweet.fields=created_at,referenced_tweets,attachments,entities,note_tweet&expansions=attachments.media_keys,referenced_tweets.id,referenced_tweets.id.author_id&media.fields=url,preview_image_url,type&user.fields=username"
 ```
 
 Append `&pagination_token={next_token}` on subsequent pages. Cap at 50 pages as a safety bound; if hit, log and stop with `pagination cap reached`.
+
+> **`note_tweet` is REQUIRED in `tweet.fields` — do not drop it.** Without it the X
+> API silently truncates long-form posts at 280 characters, mid-sentence, with no
+> ellipsis, no flag and no error. Observed 2026-08-18: 7 of 49 tweets in a 12-day
+> window were affected, one losing 330 of 605 characters. The truncated text is
+> well-formed and reads as a complete short tweet, so nothing downstream can detect
+> it and the archive silently loses content. Always read the body from
+> `note_tweet.text` when it is present and longer than `text`.
+
 
 ### 3. For each tweet — write or skip
 

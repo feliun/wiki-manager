@@ -80,10 +80,19 @@ The two routes are **shaped differently** at the X API level — the default rou
 #### 3A. Default route (when `folder_ids` empty/null)
 
 ```bash
-xurl "/2/users/{user_id}/bookmarks?max_results=100&tweet.fields=created_at,author_id,attachments,entities,referenced_tweets&expansions=author_id,attachments.media_keys,referenced_tweets.id,referenced_tweets.id.author_id&user.fields=username&media.fields=url,preview_image_url,type"
+xurl "/2/users/{user_id}/bookmarks?max_results=100&tweet.fields=created_at,author_id,attachments,entities,referenced_tweets,note_tweet&expansions=author_id,attachments.media_keys,referenced_tweets.id,referenced_tweets.id.author_id&user.fields=username&media.fields=url,preview_image_url,type"
 ```
 
 Loop on `meta.next_token` (append `&pagination_token={next_token}`). Cap at 50 pages as a safety bound. Each page is fully hydrated — proceed straight to step 4.
+
+> **`note_tweet` is REQUIRED in `tweet.fields` — do not drop it.** Without it the X
+> API silently truncates long-form posts at 280 characters, mid-sentence, with no
+> ellipsis, no flag and no error. Observed 2026-08-18: 7 of 49 tweets in a 12-day
+> window were affected, one losing 330 of 605 characters. The truncated text is
+> well-formed and reads as a complete short tweet, so nothing downstream can detect
+> it and the archive silently loses content. Always read the body from
+> `note_tweet.text` when it is present and longer than `text`.
+
 
 #### 3B. Folder route (when `folder_ids` non-empty)
 
@@ -102,7 +111,7 @@ If a tweet appears in 2+ folders: the **first** folder ID (per input order) wins
 **Phase 2 — hydrate via tweet lookup, batched:**
 
 ```bash
-xurl "/2/tweets?ids={id1},{id2},...,{idN}&tweet.fields=created_at,author_id,attachments,entities,referenced_tweets&expansions=author_id,attachments.media_keys,referenced_tweets.id,referenced_tweets.id.author_id&user.fields=username&media.fields=url,preview_image_url,type"
+xurl "/2/tweets?ids={id1},{id2},...,{idN}&tweet.fields=created_at,author_id,attachments,entities,referenced_tweets,note_tweet&expansions=author_id,attachments.media_keys,referenced_tweets.id,referenced_tweets.id.author_id&user.fields=username&media.fields=url,preview_image_url,type"
 ```
 
 Batch size: up to 100 IDs per call. Loop until all collected IDs are hydrated. Carry forward each tweet's source-folder ID from phase 1 — the `/2/tweets` response does NOT carry folder membership, so the join must be maintained client-side.
