@@ -10,6 +10,7 @@
 - **[xurl](https://github.com/mangopdf/xurl)** — required only for `/pull-tweets`. Install via `brew install mangopdf/utils/xurl`, then `xurl auth login`.
 - **Granola MCP server** — required only for `/pull-meetings`. Granola must be installed locally and the `granola` MCP server must be reachable from this Claude session.
 - **Readwise MCP server** — required only for `/pull-highlights`. The `readwise` MCP server must be authenticated and reachable from this Claude session.
+- **`claude_ai_Slack` connector** — required only for `/pull-slack`. The native `slack` MCP server is not a substitute: it has no search tool.
 - The **Obsidian desktop app must be running** for the CLI to work.
 
 ## Installation
@@ -51,6 +52,7 @@ file from `config/` to one of the above locations and customize.
 | `twitter.yaml` | Defaults for `/pull-tweets` — window, X handle, output paths |
 | `granola.yaml` | Defaults for `/pull-meetings` — destination, window, content fields, naming |
 | `readwise.yaml` | Defaults for `/pull-highlights` — destination, window, naming |
+| `slack.yaml` | Defaults for `/pull-slack` — trigger emoji, day scope, channel types, thread policy, destination |
 
 The plugin ships generic defaults. Most users only need to fill `concept-hubs.yaml`
 and (optionally) tighten `tag-policy.yaml` to their vocabulary.
@@ -65,6 +67,7 @@ and (optionally) tighten `tag-policy.yaml` to their vocabulary.
 | `/pull-tweets` | Fetch own X posts and bookmarks into `raw/twitter/` (idempotent, skip-if-exists). |
 | `/pull-meetings` | Fetch Granola meetings into `records/meetings/` (idempotent on `granola_id`). Args: `--days N`, `--since YYYY-MM-DD`, `--folder <id>`, `--folders <id1,id2,...>`. Coexists with legacy meeting files. Spec: [`commands/pull-meetings.md`](commands/pull-meetings.md). |
 | `/pull-highlights` | Fetch Readwise highlights into `raw/highlights/`, one file per source document — source URL first, then the highlights (idempotent on `highlight_ids`). Args: `--days N`, `--since YYYY-MM-DD`, `--all`. Spec: [`commands/pull-highlights.md`](commands/pull-highlights.md). |
+| `/pull-slack` | Fetch the Slack messages you marked yourself with `:brain:` into `raw/slack/`, one file per message, threads captured whole (idempotent on `slack_channel_id` + `slack_ts`). Scoped to messages dated today. Args: `--on YYYY-MM-DD`, `--all`, `--emoji NAME`, `--channels TYPES`, `--no-threads`. Spec: [`commands/pull-slack.md`](commands/pull-slack.md). |
 
 ## Skills
 
@@ -83,6 +86,7 @@ and (optionally) tighten `tag-policy.yaml` to their vocabulary.
 | `bookmark-fetcher` | Pulls the user's X bookmarks via `xurl` and writes flat `{tweet_id}.md` files; supports folder scoping. Dispatched by `/pull-tweets`. |
 | `meeting-fetcher` | Pulls Granola meetings via the `granola` MCP server and writes `{YYYY-MM-DD} {slug-title}.md` files keyed on `granola_id` frontmatter. Dispatched by `/pull-meetings`. |
 | `highlight-fetcher` | Pulls Readwise highlights via the `readwise` MCP server and writes one `{YYYY-MM-DD} {slug-title}.md` file per source, keyed on `highlight_ids` frontmatter. Dispatched by `/pull-highlights`. |
+| `slack-fetcher` | Pulls your own reacted Slack messages via the `claude_ai_Slack` MCP server (`hasmy::{emoji}: on:{date}`) and writes one `{YYYY-MM-DD} {channel} {slug}.md` file per message, keyed on `slack_channel_id` + `slack_ts`. Dispatched by `/pull-slack`. |
 
 ## Hooks
 

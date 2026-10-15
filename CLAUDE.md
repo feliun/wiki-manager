@@ -21,6 +21,7 @@ Knowledge system curator for the full lifecycle of a markdown-based wiki. Ingest
 | Command | `pull-tweets` | Fetch own tweets into `records/tweets/` and bookmarks into `raw/twitter/bookmarks/` (parallel, idempotent) |
 | Command | `pull-meetings` | Fetch Granola meetings into `records/meetings/` (idempotent on `granola_id`) |
 | Command | `pull-highlights` | Fetch Readwise highlights into `raw/highlights/`, one file per source (idempotent on `highlight_ids`) |
+| Command | `pull-slack` | Fetch Slack messages you marked with `:brain:` into `raw/slack/`, one file per message, threads whole (idempotent on `slack_channel_id` + `slack_ts`) |
 | Skill | `expand-raw-ideas` | Single-note expansion with full policy compliance |
 | Skill | `wiki-indexer` | Maintain wiki index catalog |
 | Skill | `manifest-resolver/` | Config path resolution from manifest.yaml |
@@ -29,6 +30,7 @@ Knowledge system curator for the full lifecycle of a markdown-based wiki. Ingest
 | Agent | `bookmark-fetcher` | Fetch X bookmarks via `xurl` (used by `/pull-tweets`) |
 | Agent | `meeting-fetcher` | Fetch Granola meetings via the `granola` MCP (used by `/pull-meetings`) |
 | Agent | `highlight-fetcher` | Fetch Readwise highlights via the `readwise` MCP (used by `/pull-highlights`) |
+| Agent | `slack-fetcher` | Fetch your own reacted Slack messages via the `claude_ai_Slack` MCP (used by `/pull-slack`) |
 | Hook | `wiki-logger.sh` | Log vault changes and reindex search on every write/edit |
 
 ## Operational Rules

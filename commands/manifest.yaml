@@ -105,3 +105,13 @@ wiki-manager:
       - ~/.claude/wiki-manager/readwise.yaml
     required: false
     format: yaml
+
+  slack:
+    description: "Defaults for /pull-slack — trigger emoji, channel scope, thread policy, destination. No window: reaction time is not exposed by the Slack API."
+    paths:
+      - $WORKSPACE/.wiki-manager/slack.yaml
+      - $WORKSPACE/system/memory/config/slack.yaml
+      - config/slack.yaml
+      - ~/.claude/wiki-manager/slack.yaml
+    required: false
+    format: yaml

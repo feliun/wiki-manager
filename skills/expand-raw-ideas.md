@@ -46,6 +46,14 @@ When to use:
      Build the note from them. Fetch the `Source:` URL only for context
      (author's framing, a term you need defined); never let a full-article
      summary replace the highlights.
+   - **`source: slack` files:** the messages ARE the idea — the capture is a
+     conversation the user chose to keep, not a pointer to the links inside
+     it. Build the note from the message text, preserving who said what when
+     the attribution carries meaning (a decision, a disagreement, a claim
+     someone owns). Treat URLs in the body as references: fetch one only when
+     the thread argues about it and you need a term defined; never let a
+     summary of a linked article become the note. The one exception is a bare
+     link drop with no discussion around it — there the link is the idea.
    - If the raw file contains a URL, run `defuddle parse <url> --md` for clean content extraction.
    - Fall back to `WebFetch` on failure.
    - If both fail, use the raw text only.

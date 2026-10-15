@@ -1,0 +1,76 @@
+# Slack capture defaults — used by /pull-slack.
+# Plugin default config. Resolved at priority 3, below project + vault overrides
+# (see commands/manifest.yaml::slack).
+
+# Destination directory, relative to vault_root (from vault-paths.yaml).
+# Lives under raw/ so /ingest expands each capture into a wiki note.
+path: raw/slack/
+
+# The reaction that marks a message for capture: react with this emoji in
+# Slack and /pull-slack collects the message on its next run.
+#
+# Written WITHOUT surrounding colons. The fetcher builds the search modifier
+# as `hasmy::{trigger_emoji}:` — `hasmy:`, never `has:`. See "whose reaction"
+# below; the distinction is load-bearing.
+trigger_emoji: brain
+
+# ── Whose reaction counts: ONLY THE USER'S. ─────────────────────────────────
+#
+# `hasmy::{emoji}:` matches messages the authenticated user reacted to.
+# `has::{emoji}:` matches the same emoji from ANYONE, which in a shared
+# workspace means teammates silently fill the vault with captures the user
+# never chose.
+#
+# These are not near-synonyms — they return disjoint sets. Measured
+# 2026-10-15 in #ai-stuff: `has::eyes:` returned six messages from 7–14 Oct
+# that colleagues had marked; `hasmy::eyes:` returned six entirely different
+# ones, the user's own, going back to February. Zero overlap.
+#
+# Never relax `hasmy:` to `has:`.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Time scope: messages DATED the day the command runs. ────────────────────
+#
+#   today  — the fetcher appends `on:{run_date}` to the query (verified
+#            precise: `on:2026-09-28` returned exactly that day's marked
+#            message, `on:2026-09-27` returned none).
+#   all    — no date filter; the entire marked history, paginated.
+#
+# Known limitation of `today`, accepted deliberately: Slack exposes the
+# MESSAGE timestamp, never the REACTION timestamp. Marking an old message
+# today produces a hit stamped with the old date, so `on:{today}` will not
+# see it. Capture-as-you-read works; archaeology does not.
+#
+# What `today` buys in exchange: the marked set never has to be re-scanned,
+# so the pull stays O(one day) forever, and there is no need to un-react to
+# keep it bounded.
+#
+# Recovery when something old was marked, or when a daily run was missed:
+# `/pull-slack --on YYYY-MM-DD` or `/pull-slack --all`. Dedupe makes both
+# safe to re-run.
+day_scope: today
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Which conversation types to search. Comma-separated. The API default is all
+# four; narrow to "public_channel,private_channel" to keep DMs out of the vault.
+channel_types: public_channel,private_channel,mpim,im
+
+# Limit to channels the user belongs to. false searches everything visible.
+only_my_channels: false
+
+# When a captured message has replies (the search hit reports `Reply count`),
+# fetch the whole thread and include it in the body. A reply captured on its
+# own is frequently unreadable without the question above it.
+include_thread: true
+
+# Filename shape. `{date}` is the MESSAGE date, `{channel}` the channel name
+# without `#`, `{slug}` the opening of the message text, slugified.
+naming:
+  pattern: "{date} {channel} {slug}"
+  date_format: YYYY-MM-DD
+  slug_max_chars: 50
+
+# All Slack reads use the `claude_ai_Slack` MCP server — the only configured
+# client with a search tool. The native `slack` MCP server exposes channel
+# history and posting only, and CANNOT back this pipeline. Both are
+# interactively authenticated: a headless or cron-driven run may find neither.
