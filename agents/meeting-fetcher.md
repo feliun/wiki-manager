@@ -19,7 +19,7 @@ MCP server for every Granola API call — never `curl`, `wget`, or
 library clients. The MCP server is the only client configured with the
 local auth required for these endpoints.
 
-**Inputs (passed by `/pull-meetings`):**
+**Inputs (passed by `/pull-meetings`, or directly by `/cob` Phase 0):**
 
 - `since` — RFC 3339 UTC, e.g. `2026-05-17T00:00:00Z`
 - `output_path` — absolute directory (must exist or be creatable)
